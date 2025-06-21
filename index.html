@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What If Network</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- EmailJS CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your Public Key
+        // IMPORTANT: Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS Public Key
+        (function() {
+            emailjs.init({
+                publicKey: "Wj1wGSlJqR_HvHw2U", // Replace with your Public Key from EmailJS
+            });
+        })();
+
+        window.onload = function() {
+            const contactForm = document.getElementById('contact-form');
+            const statusMessage = document.getElementById('status-message');
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    statusMessage.textContent = 'Sending...';
+                    statusMessage.className = 'mt-4 text-center text-blue-400 font-medium'; // Adjusted color for dark theme
+
+                    // Prepare template parameters from form fields
+                    const templateParams = {
+                        name_from: contactForm.name.value,
+                        email_from: contactForm.email.value,
+                        message: contactForm.message.value
+                    };
+
+                    // Send the email using EmailJS
+                    // IMPORTANT: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID'
+                    // with your actual EmailJS Service ID and Template ID
+                    emailjs.send('service_atdncm5', 'template_i7ko30h', templateParams)
+                        .then(function(response) {
+                            console.log('SUCCESS!', response.status, response.text);
+                            statusMessage.textContent = 'Message sent successfully!';
+                            statusMessage.className = 'mt-4 text-center text-green-400 font-medium'; // Adjusted color
+                            contactForm.reset(); // Clear the form
+                        }, function(error) {
+                            console.log('FAILED...', error);
+                            statusMessage.textContent = 'Failed to send message. Please try again.';
+                            statusMessage.className = 'mt-4 text-center text-red-400 font-medium'; // Adjusted color
+                        });
+                });
+            } else {
+                console.error("Contact form not found!");
+            }
+
+            // --- JavaScript for Horizontal Drag-to-Scroll ---
+            const scrollContainer = document.querySelector('.flex.overflow-x-auto');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            if (scrollContainer) {
+                scrollContainer.addEventListener('mousedown', (e) => {
+                    // Check if the click is on an image or inside the card, but prevent default image dragging
+                    if (e.target.tagName === 'IMG') {
+                        e.preventDefault(); // Prevent default image drag behavior
+                    }
+                    isDown = true;
+                    scrollContainer.classList.add('active-drag'); // Add a class for visual feedback if needed
+                    startX = e.pageX - scrollContainer.offsetLeft;
+                    scrollLeft = scrollContainer.scrollLeft;
+                    // Pause auto-scroll when user starts dragging
+                    cancelAnimationFrame(animationFrameId);
+                });
+
+                scrollContainer.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    scrollContainer.classList.remove('active-drag');
+                    // Resume auto-scroll when mouse leaves
+                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
+                        startAutoScroll();
+                    }
+                });
+
+                scrollContainer.addEventListener('mouseup', () => {
+                    isDown = false;
+                    scrollContainer.classList.remove('active-drag');
+                    // Resume auto-scroll when drag ends
+                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
+                        startAutoScroll();
+                    }
+                });
+
+                scrollContainer.addEventListener('mousemove', (e) => {
+                    if (!isDown) return; // Stop the function from running when the mouse is not clicked
+                    e.preventDefault(); // Prevent text selection or other default behaviors
+                    const x = e.pageX - scrollContainer.offsetLeft;
+                    const walk = (x - startX) * 2; // Multiplier for scroll speed
+                    scrollContainer.scrollLeft = scrollLeft - walk;
+                });
+
+                // Also add touch events for mobile compatibility
+                scrollContainer.addEventListener('touchstart', (e) => {
+                    if (e.target.tagName === 'IMG') {
+                        e.preventDefault(); // Prevent default image drag behavior on touch
+                    }
+                    isDown = true;
+                    startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+                    scrollLeft = scrollContainer.scrollLeft;
+                    // Pause auto-scroll on touch start
+                    cancelAnimationFrame(animationFrameId);
+                });
+
+                scrollContainer.addEventListener('touchend', () => {
+                    isDown = false;
+                    // Resume auto-scroll on touch end
+                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
+                        startAutoScroll();
+                    }
+                });
+
+                scrollContainer.addEventListener('touchmove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    scrollContainer.scrollLeft = scrollLeft - walk;
+                });
+
+                // Prevent default drag behavior on images specifically
+                const images = scrollContainer.querySelectorAll('img');
+                images.forEach(img => {
+                    img.ondragstart = () => false;
+                });
+            }
+            // --- End JavaScript for Horizontal Drag-to-Scroll ---
+
+            // --- Scroll to Contact Section ---
+            const shareStoryButton = document.getElementById('share-story-button');
+            const contactSection = document.getElementById('contact-section');
+
+            if (shareStoryButton && contactSection) {
+                shareStoryButton.addEventListener('click', function() {
+                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                });
+            } else {
+                console.error("Share story button or contact section not found!");
+            }
+            // --- End Scroll to Contact Section ---
+
+            // --- Auto-Scrolling Adventure Cards ---
+            let animationFrameId;
+            let scrollSpeed = 0.5; // Adjust scroll speed here
+            let isPausedByHover = false;
+
+            function animateScroll() {
+                if (!scrollContainer) return; // Exit if container not found
+
+                if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 1) {
+                    // If scrolled to the end, reset to beginning (loop)
+                    scrollContainer.scrollLeft = 0;
+                } else {
+                    scrollContainer.scrollLeft += scrollSpeed;
+                }
+                animationFrameId = requestAnimationFrame(animateScroll);
+            }
+
+            function startAutoScroll() {
+                // Clear any existing animation frame to prevent multiple loops
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(animateScroll);
+            }
+
+            // Pause auto-scroll on hover (for mouse users)
+            if (scrollContainer) {
+                scrollContainer.addEventListener('mouseenter', () => {
+                    isPausedByHover = true;
+                    cancelAnimationFrame(animationFrameId);
+                });
+                scrollContainer.addEventListener('mouseleave', () => {
+                    isPausedByHover = false;
+                    // Only restart if not currently dragging
+                    if (!isDown) {
+                        startAutoScroll();
+                    }
+                });
+            }
+
+            // Start the auto-scroll when the page loads
+            startAutoScroll();
+            // --- End Auto-Scrolling Adventure Cards ---
+
+            // --- Modal Logic ---
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseButton = document.getElementById('modal-close');
+
+            document.querySelectorAll('.read-more-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const card = this.closest('.card'); // Get the parent card
+                    const title = card.querySelector('h3').textContent;
+                    // Get the full description from the hidden div
+                    const fullDescription = card.querySelector('.full-description').textContent;
+
+                    modalTitle.textContent = title;
+                    modalContent.textContent = fullDescription; // Set the full description
+
+                    modalOverlay.classList.remove('hidden'); // Show the modal
+                });
+            });
+
+            modalCloseButton.addEventListener('click', () => {
+                modalOverlay.classList.add('hidden'); // Hide the modal
+            });
+
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) { // Only close if clicking on the overlay, not the modal content
+                    modalOverlay.classList.add('hidden');
+                }
+            });
+            // --- End Modal Logic ---
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Dark blue/purple background */
+            color: #e0e0e0; /* Light gray text */
+        }
+        .container {
+            max-width: 1200px;
+        }
+        /* Custom styles for gradients and shadows */
+        .gradient-button {
+            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            transition: all 0.3s ease;
+        }
+        .gradient-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Darker shadow for dark theme */
+        }
+        .card {
+            background-color: #2e2e4a; /* Slightly lighter dark blue/purple for cards */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15); /* Darker shadow */
+            transition: transform 0.3s ease;
+            color: #e0e0e0; /* Light text within cards */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        /* Hide scrollbar for aesthetic purposes (optional) */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        /* Optional: Add a grab cursor when hovering over the scrollable area */
+        .flex.overflow-x-auto {
+            cursor: grab;
+        }
+        .flex.overflow-x-auto.active-drag {
+            cursor: grabbing;
+        }
+        /* Specific styling for the WIN header */
+        .win-header {
+            font-size: 5rem; /* Larger font size for emphasis */
+            line-height: 0.9; /* Adjust line height to bring words closer */
+            display: inline-block; /* Allows width to shrink to content */
+            text-align: left; /* Left align the entire block */
+            font-weight: 900; /* Make the whole header bolder */
+            /* Removed background-image, padding, border-radius */
+            background-image: none; /* Removed background gradient */
+            padding: 0; /* Removed padding */
+            border-radius: 0; /* Removed border-radius */
+            color: #e0e0e0; /* Default text color for the rest of the words (light) */
+        }
+        .win-header span {
+            display: block; /* Each word on its own line */
+            color: inherit; /* Inherit color from parent h1 (white) */
+        }
+        .win-header .emphasized-letter {
+            font-weight: 900; /* Extra bold for emphasized letters */
+            background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
+            -webkit-background-clip: text; /* Clip background to text */
+            background-clip: text;
+            -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
+            text-fill-color: transparent;
+            display: inline; /* Keep it inline to be part of the word */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Subtle shadow for pop and contrast */
+        }
+        /* Adjust word spacing for the specific alignment */
+        .win-header .word-if {
+            margin-left: 30px; /* Adjusted to 30px */
+        }
+        .win-header .word-network {
+            margin-left: 10px; /* Adjusted to 10px */
+        }
+
+        /* Adjustments for general text colors on dark theme */
+        h2, h3 {
+            color: #e0e0e0; /* Light headings */
+        }
+        p {
+            color: #c0c0c0; /* Slightly darker light text for paragraphs */
+        }
+        label {
+            color: #e0e0e0; /* Light labels for form */
+        }
+        input, textarea {
+            background-color: #3a3a5e; /* Darker input fields */
+            border-color: #5a5a7e; /* Darker border for inputs */
+            color: #e0e0e0; /* Light text in inputs */
+        }
+        input:focus, textarea:focus {
+            ring-color: #8e2de2; /* Adjusted focus ring color */
+            border-color: #8e2de2; /* Adjusted focus border color */
+        }
+        /* Call to action button text color */
+        #share-story-button {
+            color: #1a1a2e; /* Dark text on white button */
+        }
+
+        /* Call to Action Phrase Emphasis */
+        .cta-phrase .emphasized-you {
+            font-weight: 900;
+            background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            display: inline;
+        }
+
+        /* Ensure header text alignment is respected by its parent */
+        header {
+            text-align: center; /* Center the entire header block */
+        }
+        header p { /* Center the quote also */
+            text-align: center;
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of other content */
+        }
+        .modal-content {
+            background-color: #2e2e4a; /* Card background color for modal */
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto; /* Enable scrolling for long content */
+            position: relative;
+            color: #e0e0e0; /* Light text */
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #e0e0e0;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .modal-title {
+            font-size: 2.25rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1rem;
+            color: #FFA500; /* Orange color for modal title */
+        }
+        .modal-body {
+            font-size: 1rem; /* text-base */
+            line-height: 1.6;
+            color: #c0c0c0; /* Slightly darker light text */
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <header class="text-center mb-12 w-full max-w-2xl mx-auto">
+            <h1 class="transform hover:scale-105 transition-transform duration-300 ease-in-out win-header">
+                <span><span class="emphasized-letter">W</span>hat</span>
+                <span class="word-if"><span class="emphasized-letter">I</span>f</span>
+                <span class="word-network"><span class="emphasized-letter">N</span>etwork</span>
+            </h1>
+            <p class="mt-4 text-xl max-w-2xl mx-auto">
+                “The most dangerous phrase in the language is, ‘We’ve always done it this way.’” - Grace Hopper
+            </p>
+        </header>
+
+        <!-- Adventures Section -->
+        <section class="w-full container mx-auto px-4 mb-16">
+            <h2 class="text-4xl font-bold text-left mb-10 pb-2 border-b-4 border-purple-500 inline-block px-4">
+                My "What If" Adventures
+            </h2>
+            <!-- Horizontal Scroll Container for Cards -->
+            <div class="flex overflow-x-auto snap-x snap-mandatory py-4 gap-8 scrollbar-hide">
+                <!-- Adventure Card 1: Bahamas Hike -->
+                <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <img src="images/bahamas.png" alt="Bahamas Hike Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <h3 class="text-2xl font-semibold mb-3">What if I hiked to the highest point in the Bahamas?</h3>
+                    <p class="leading-relaxed mb-4 text-sm">
+                        A challenging trek to the summit of Mount Alvernia on Cat Island, encountering dense foliage, tropical heat, and elusive trails.
+                        <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
+                    </p>
+                    <!-- Full detailed description hidden -->
+                    <div class="full-description hidden">
+                        This adventure involved a surprising amount of preparation for what seemed like a small island hike. Mount Alvernia, while not massive, presented a unique challenge with its rugged terrain and the intense Bahamian humidity. The journey tested my navigation skills as trails were often overgrown, but reaching the top and seeing the panoramic views of the island and surrounding turquoise waters was absolutely breathtaking. It was a true testament to pushing physical limits and discovering hidden gems.
+                    </div>
+                </div>
+
+                <!-- Adventure Card 2: Singing on Stage -->
+                <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <img src="https://placehold.co/400x250/818CF8/ffffff?text=Singing+on+Stage" alt="Singing on Stage Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <h3 class="text-2xl font-semibold mb-3">What if I sang on stage to 100 people?</h3>
+                    <p class="leading-relaxed mb-4 text-sm">
+                        Stepping out of my comfort zone to perform a song in front of a live audience of a hundred people.
+                        <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
+                    </p>
+                    <!-- Full detailed description hidden -->
+                    <div class="full-description hidden">
+                        The sheer terror before stepping onto that stage was immense. My hands were clammy, and my voice felt like it was stuck in my throat. But as I started singing, something shifted. The lights, the faces in the crowd, the music – it all blended into an exhilarating experience. It wasn't about being perfect; it was about the courage to try and the unexpected joy of connecting with an audience, even with a few shaky notes. This "what if" taught me the power of vulnerability.
+                    </div>
+                </div>
+
+                <!-- Adventure Card 3: Traveling Circus -->
+                <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <img src="https://placehold.co/400x250/C084FC/ffffff?text=Traveling+Circus" alt="Traveling Circus Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <h3 class="text-2xl font-semibold mb-3">What if I joined a traveling circus?</h3>
+                    <p class="leading-relaxed mb-4 text-sm">
+                        A fascinating week immersed in the nomadic and skilled world of a small, independent traveling circus.
+                        <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
+                    </p>
+                    <!-- Full detailed description hidden -->
+                    <div class="full-description hidden">
+                        Life under the big top is far from glamorous, but it's incredibly rich in dedication and camaraderie. I spent a week helping with everything from setting up tents to feeding the animals and even assisting with costume changes. The performers, often from generations of circus families, were incredibly welcoming and passionate. I even got a rudimentary lesson in juggling! It was an eye-opening experience into a unique subculture built on trust, hard work, and dazzling entertainment.
+                    </div>
+                </div>
+
+                <!-- New Adventure Card 4: Ocean Sailing -->
+                <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <img src="https://placehold.co/400x250/6EE7B7/ffffff?text=Ocean+Sail" alt="Ocean Sail Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <h3 class="text-2xl font-semibold mb-3">What if I learned to sail across the ocean?</h3>
+                    <p class="leading-relaxed mb-4 text-sm">
+                        Embarking on a journey to master sailing and navigate the vast, unpredictable open ocean.
+                        <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
+                    </p>
+                    <!-- Full detailed description hidden -->
+                    <div class="full-description hidden">
+                        The idea of being solely reliant on the wind and my own navigation skills was both terrifying and exhilarating. I spent months learning the basics, from tying knots to understanding charts, before joining a crew for a transatlantic voyage. There were days of calm, breathtaking sunsets, and challenging storms that tested every ounce of my resolve. It was an incredible lesson in patience, resilience, and the sheer power of nature. The sense of accomplishment upon reaching the other side was unparalleled.
+                    </div>
+                </div>
+
+                <!-- New Adventure Card 5: Off-Grid Living -->
+                <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <img src="https://placehold.co/400x250/FCD34D/ffffff?text=Off-Grid+Living" alt="Off-Grid Living Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <h3 class="text-2xl font-semibold mb-3">What if I tried living entirely off-grid for a month?</h3>
+                    <p class="leading-relaxed mb-4 text-sm">
+                        A month-long experiment in complete self-sufficiency, disconnected from modern utilities.
+                        <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
+                    </p>
+                    <!-- Full detailed description hidden -->
+                    <div class="full-description hidden">
+                        This "what if" was a profound test of resourcefulness. For thirty days, I relied on solar power, collected rainwater, cooked over an open fire, and grew my own food. It was challenging, humbling, and surprisingly liberating. I learned invaluable skills, appreciated simple comforts more deeply, and developed a profound connection with the natural world. It taught me how much we rely on infrastructure and how capable we are when pushed to adapt.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="w-full bg-gradient-to-r from-blue-600 to-purple-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-xl shadow-xl mb-16 transform hover:scale-105 transition-transform duration-300 ease-in-out">
+            <h2 class="text-4xl sm:text-5xl font-extrabold mb-6 cta-phrase">
+                What if <span class="emphasized-you">you</span> share your story with the world?
+            </h2>
+            <p class="text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed">
+                You've read about my "what ifs," now it's your turn. We all have unique skills, passions, and dreams that often stay hidden. Imagine the impact you could make, the joy you could bring, or the change you could inspire by simply stepping forward. What's that one thing you've always wanted to do, that talent you've been nurturing in secret? Don't let it remain a "what if." Take the leap!
+            </p>
+            <button id="share-story-button" class="mt-8 px-8 py-4 bg-white text-blue-700 font-bold text-lg rounded-full shadow-lg hover:shadow-xl hover:text-purple-700 transform hover:scale-105 transition duration-300 ease-in-out">
+                Share your story!
+            </button>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section id="contact-section" class="w-full container mx-auto px-4 rounded-xl shadow-lg p-8 sm:p-12 mb-12">
+            <h2 class="text-4xl font-bold text-left mb-10 pb-2 border-b-4 border-purple-500 inline-block px-4">
+                Contact Me
+            </h2>
+            <p class="text-lg text-center mb-8">
+                Have your own "what if" story to share? Want to suggest a new adventure for me to tackle? Or perhaps you're ready to share your talent with the world and need a little encouragement. I'd love to hear from you!
+            </p>
+            <!-- Form updated for EmailJS -->
+            <form id="contact-form" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium mb-1">Name</label>
+                    <input type="text" id="name" name="name" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-base" placeholder="Your Name" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="email" name="email" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-base" placeholder="your.email@example.com" required>
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium mb-1">Message</label>
+                    <textarea id="message" name="message" rows="6" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-base" placeholder="Your message..." required></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="gradient-button w-full flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105 transition duration-300 ease-in-out">
+                        Send Message
+                    </button>
+                </div>
+                <!-- Status message for form submission -->
+                <div id="status-message" class="text-center mt-4"></div>
+            </form>
+        </section>
+
+        <!-- Footer Section -->
+        <footer class="w-full text-center py-8 text-sm">
+            &copy; 2025 What If Network. All rights reserved.
+        </footer>
+    </div>
+
+    <!-- Modal Overlay and Content -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close">&times;</button>
+            <h2 id="modal-title" class="modal-title"></h2>
+            <p id="modal-content" class="modal-body"></p>
+        </div>
+    </div>
+</body>
+</html>
