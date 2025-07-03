@@ -198,30 +198,91 @@
             const modalContent = document.getElementById('modal-content');
             const modalCloseButton = document.getElementById('modal-close');
 
+            // Handler for the specific trigger link
+            function handleTriggerCard3Click(e) {
+                e.preventDefault();
+                // Get Adventure Card 3's elements (which is the 3rd card in the HTML structure)
+                const card3 = document.querySelector('.card:nth-of-type(3)');
+                if (card3) {
+                    const title3 = card3.querySelector('h3').textContent;
+                    const fullDescriptionHtml3 = card3.querySelector('.full-description').innerHTML;
+
+                    // Update the current modal's content
+                    modalTitle.textContent = title3;
+                    modalContent.innerHTML = fullDescriptionHtml3;
+                    // Re-attach listeners for any new dynamic links within the updated content
+                    attachDynamicLinkListeners();
+                } else {
+                    console.error("Adventure Card 3 (Sleeping with a Stranger) not found!");
+                }
+            }
+
+            // Handler for the specific trigger link to Card 2
+            function handleTriggerCard2Click(e) {
+                e.preventDefault();
+                const card2 = document.querySelector('.card:nth-of-type(2)');
+                if (card2) {
+                    const title2 = card2.querySelector('h3').textContent;
+                    const fullDescriptionHtml2 = card2.querySelector('.full-description').innerHTML;
+                    modalTitle.textContent = title2;
+                    modalContent.innerHTML = fullDescriptionHtml2;
+                    attachDynamicLinkListeners(); // Re-attach listeners for any new dynamic links
+                } else {
+                    console.error("Adventure Card 2 (Homeless for 100 hours) not found!");
+                }
+            }
+
+            // Function to attach listeners to dynamic links
+            function attachDynamicLinkListeners() {
+                // Remove existing listeners to prevent duplicates
+                document.querySelectorAll('.trigger-card-3').forEach(link => {
+                    link.removeEventListener('click', handleTriggerCard3Click);
+                });
+                document.querySelectorAll('.trigger-card-2').forEach(link => {
+                    link.removeEventListener('click', handleTriggerCard2Click);
+                });
+
+                // Add new listeners
+                document.querySelectorAll('.trigger-card-3').forEach(link => {
+                    link.addEventListener('click', handleTriggerCard3Click);
+                });
+                document.querySelectorAll('.trigger-card-2').forEach(link => {
+                    link.addEventListener('click', handleTriggerCard2Click);
+                });
+            }
+
+            
             document.querySelectorAll('.read-more-link').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
+                    console.error("Yay");
                     const card = this.closest('.card'); // Get the parent card
                     const title = card.querySelector('h3').textContent;
-                    // Get the full description from the hidden div
-                    const fullDescription = card.querySelector('.full-description').textContent;
+                    // Get the full description from the hidden div (innerHTML to preserve paragraphs)
+                    const fullDescriptionHtml = card.querySelector('.full-description').innerHTML;
 
                     modalTitle.textContent = title;
-                    modalContent.textContent = fullDescription; // Set the full description
+                    // Directly set the innerHTML, including images and paragraphs
+                    modalContent.innerHTML = fullDescriptionHtml;
 
                     modalOverlay.classList.remove('hidden'); // Show the modal
+                    attachDynamicLinkListeners();
                 });
             });
 
             modalCloseButton.addEventListener('click', () => {
                 modalOverlay.classList.add('hidden'); // Hide the modal
+                console.error("Yay");
             });
 
             modalOverlay.addEventListener('click', (e) => {
                 if (e.target === modalOverlay) { // Only close if clicking on the overlay, not the modal content
                     modalOverlay.classList.add('hidden');
+                    console.error("Yay");
                 }
             });
+            
+            attachDynamicLinkListeners(); 
             // --- End Modal Logic ---
         };
     </script>
@@ -274,7 +335,6 @@
             display: inline-block; /* Allows width to shrink to content */
             text-align: left; /* Left align the entire block */
             font-weight: 900; /* Make the whole header bolder */
-            /* Removed background-image, padding, border-radius */
             background-image: none; /* Removed background gradient */
             padding: 0; /* Removed padding */
             border-radius: 0; /* Removed border-radius */
@@ -303,8 +363,11 @@
         }
 
         /* Adjustments for general text colors on dark theme */
-        h2, h3 {
+        h2 {
             color: #e0e0e0; /* Light headings */
+        }
+        .card h3 { /* Specific rule for adventure card titles */
+            color: #e0e0e0; /* Reverted to light gray */
         }
         p {
             color: #c0c0c0; /* Slightly darker light text for paragraphs */
@@ -391,11 +454,51 @@
             font-weight: 700; /* font-bold */
             margin-bottom: 1rem;
             color: #FFA500; /* Orange color for modal title */
+            text-align: center; /* Center the modal title */
         }
-        .modal-body {
-            font-size: 1rem; /* text-base */
-            line-height: 1.6;
-            color: #c0c0c0; /* Slightly darker light text */
+        .modal-body p { /* Target paragraphs within the modal body */
+            margin-bottom: 1rem; /* Add space between paragraphs */
+            line-height: 1.6; /* Ensure good readability */
+            color: #c0c0c0; /* Consistent text color */
+        }
+        .modal-body img {
+            display: flex;
+            justify-content: center; /* Center images horizontally */
+            margin-bottom: 1rem; /* Add space between paragraphs */
+            max-height:300px;
+            width: auto;
+        }
+        .description-image-container {
+            display: flex;
+            gap: 0.5rem; /* Space between images */
+            flex-wrap: wrap; /* Allow images to wrap on smaller screens */        
+        }
+        /* Styling for images within the modal */
+        .modal-image-gallery {
+            display: flex;
+            justify-content: center; /* Center images horizontally */
+            gap: 0.5rem; /* Space between images */
+            flex-wrap: wrap; /* Allow images to wrap on smaller screens */
+        }
+        .modal-image-gallery img, .description-image-container img {
+            width: 30%; /* Approx 1/3 width for 3 images, allowing for gap */
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 0.5rem; /* rounded corners */
+            object-fit: cover; /* Cover the area without distortion */
+            min-width: 80px; /* Minimum width for very small screens */
+            max-width:300px;
+        }
+        /* Adjust for smaller screens */
+        @media (max-width: 640px) {
+            .modal-image-gallery img {
+                width: 48%; /* Two images per row on small screens */
+            }
+        }
+        @media (max-width: 400px) {
+            .modal-image-gallery img {
+                width: 90%; /* One image per row on very small screens */
+            }
         }
     </style>
 </head>
@@ -422,49 +525,200 @@
             <div class="flex overflow-x-auto snap-x snap-mandatory py-4 gap-8 scrollbar-hide">
                 <!-- Adventure Card 1: Bahamas Hike -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <img src="images/bahamas.png" alt="Bahamas Hike Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
-                    <h3 class="text-2xl font-semibold mb-3">What if I hiked to the highest point in the Bahamas?</h3>
+                    <img src="images/1/main.png" alt="Island Hike Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
+                    <h3 class="text-2xl font-semibold mb-3">What if I chose the unpaved road?</h3>
                     <p class="leading-relaxed mb-4 text-sm">
-                        A challenging trek to the summit of Mount Alvernia on Cat Island, encountering dense foliage, tropical heat, and elusive trails.
+                        When taking a vacation to the Bahamas, most people imagine sunbathing on the white sandy beach or swimming in the clear blue water, what if I instead decide to just start walking up the hill and see where nature takes me?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
                     <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
-                        This adventure involved a surprising amount of preparation for what seemed like a small island hike. Mount Alvernia, while not massive, presented a unique challenge with its rugged terrain and the intense Bahamian humidity. The journey tested my navigation skills as trails were often overgrown, but reaching the top and seeing the panoramic views of the island and surrounding turquoise waters was absolutely breathtaking. It was a true testament to pushing physical limits and discovering hidden gems.
+                        <div class="modal-image-gallery">
+                            <img src="images/1/d0.png" alt="Bahamas View 1">
+                            <img src="images/1/d1.png" alt="Bahamas View 2">
+                            <img src="images/1/d2.png" alt="Bahamas View 3">
+                            <img src="images/1/d3.png" alt="Bahamas View 4">
+                            <img src="images/1/d4.png" alt="Bahamas View 5">
+                            <img src="images/1/d5.png" alt="Bahamas View 6">
+                            <img src="images/1/d6.png" alt="Bahamas View 7">
+                        </div>
+                        <p>
+                            When taking a vacation to the Bahamas, most people imagine sunbathing on the white sandy beach or swimming in the clear blue water, what if I instead decide to just start walking up the hill and see where nature takes me?
+                        </p>
+                        <p>
+                            That is exactly what I did when I went to a small resort island called Half Moon Cay, Bahamas on December 2023. The water temperature was very cold in December so instead of suffering through the uncomfortable water, I decided to venture on a solo hike around the island.
+                        </p>
+                        <img src="images/1/d0.png" alt="Bahamas View 1">
+                        <p> 
+                            About 10 minutes into the hike, I came across a curved path. Most people would continue the trail toward the right, but a spontaneous thought popped into my mind. <b><u>What if</u></b> I chose to walk on the rocky path?
+                        </p>
+                        <p> Onward I went, stepping over rock pebbles and broken branches, excited to discover what lies on the other side.</p>
+                        <img src="images/1/d1.png" alt="Bahamas View 2">
+                        <p> I walked and walked with nothing except for a water bottle and a black hat. After 40 minutes of climbing over boulders, up and down several hills, and slipping through narrow tree openings, I finally reached the end of the rocky road.</p>
+                        <img src="images/1/d2.png" alt="Bahamas View 3">
+                        <p>
+                            I spent a brief moment to admire the incredible view of the blue sea from above and, revitalized with my personal achievement of hiking through uncharted grounds, I was ready to turn back and reunite with my family tanning on the beach below. What I saw next was something that noone could have ever predicted.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/1/d3.png" alt="Bahamas View 4">
+                            <img src="images/1/d4.png" alt="Bahamas View 5">
+                        </div>
+                        <p>
+                            The moment I turned around to walk back, no doubt curious by my unusual presence on the unpaved path, a baby goat trodded barely 50 feet away. As I came closer, I bent down to be within 6 feet of the baby goat looking inquisitively at me. Unfortunately, I did not have any food to offer him but I will be sure to bring some trail mix on every nature hikes from now on.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/1/d5.png" alt="Bahamas View 6">
+                            <img src="images/1/d6.png" alt="Bahamas View 7">
+                        </div>
+                        <p>
+                            Coming down from the hike, I did not expect to find an even rarer discovery. What I thought was just a beautiful shell turned out to be the home of a young hermit crab with a surprisingly very sturdy grip. And what a fitting theme to this story. A hermit crab isn't afraid to try on new shells as they grow. Let us all live in the same way and turn the <b><u>What if</u></b> into <b><u>What we did</u></b>"
+                        </p>
                     </div>
                 </div>
 
-                <!-- Adventure Card 2: Singing on Stage -->
+                <!-- Adventure Card 2: Living on Nothing -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <img src="https://placehold.co/400x250/818CF8/ffffff?text=Singing+on+Stage" alt="Singing on Stage Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
-                    <h3 class="text-2xl font-semibold mb-3">What if I sang on stage to 100 people?</h3>
+                    <img src="images/2/main.png" alt="Singing on Stage Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
+                    <h3 class="text-2xl font-semibold mb-3">What if I was homeless for 100 hours?</h3>
                     <p class="leading-relaxed mb-4 text-sm">
-                        Stepping out of my comfort zone to perform a song in front of a live audience of a hundred people.
+                        Traveling to another state for 5 days sounds fun... but is it still fun if you did not have a place to sleep? What if I did that on purpose to see if it was possible to live on only the kindness of completely strangers?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
                     <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
-                        The sheer terror before stepping onto that stage was immense. My hands were clammy, and my voice felt like it was stuck in my throat. But as I started singing, something shifted. The lights, the faces in the crowd, the music – it all blended into an exhilarating experience. It wasn't about being perfect; it was about the courage to try and the unexpected joy of connecting with an audience, even with a few shaky notes. This "what if" taught me the power of vulnerability.
+                        <div class="modal-image-gallery">
+                            <img src="images/2/d0.png" alt="Living on Nothing 1">
+                            <img src="images/2/d1.png" alt="Living on Nothing 2">
+                            <img src="images/2/d2.png" alt="Living on Nothing 3">
+                            <img src="images/2/d3.png" alt="Living on Nothing 4">
+                            <img src="images/2/d4.png" alt="Living on Nothing 5">
+                            <img src="images/2/d5.png" alt="Living on Nothing 6">
+                            <img src="images/2/d6.png" alt="Living on Nothing 7">
+                            
+                        </div>
+                        <p>
+                            Traveling to another state for 5 days sounds fun... but is it still fun if you did not have a place to sleep? What if I did that on purpose to see if it was possible to live on only the kindness of completely strangers?
+                        </p>
+                        <p>
+                            That is exactly what I did when I flew to Boston, Massachusetts without booking any place to sleep. At the time, I was enchanted by a YouTube channel called Yes Theory that had attempted to ask strangers if they could sleep in their house, capitalizing on the group members' charisma and the kindness of strangers. I figured that this was the perfect excuse to attempt living on nothing.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d0.png" alt="Living on Nothing 1">
+                            <img src="images/2/d1.png" alt="Living on Nothing 2">
+                        </div>
+                        <p>
+                            Before arriving in Boston, with my goal of relying on the kindness of strangers for a place to sleep, I had initially thought that were my approaches to fail, I would be able to find a quiet corner on a secluded street to lay down and rest for a few hours each night. Coming from the warm state of Georgia, I was completely unprepared for the harsh average temperature of 40 degree in Boston. When I landed in Boston at 10am on a Wednesday in March, I quickly realized that it would be impossible to sleep outside in the cold without getting dangerous frostbites.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d2.png" alt="Living on Nothing 3">
+                            <img src="images/2/d3.png" alt="Living on Nothing 4">
+                        </div>
+                        <p>
+                            So I quickly formulated a plan. The first day, I should take it easy, what am I good at? Oh, I'm a college student. At Georgia Tech, there are libraries that open 24 hours a day. I look like a college student so maybe I could pretend to be a student hard at work who fell asleep in the library of a nearby college. I knew MIT was nearby and upon searching the web, there was a library on campus that was open 24/7. Easy Peazy, I thought. There are still plenty of time before night come around, so I spent the next 7 hours exploring museum, shops, and art exhibits around Boston. I did not realize then that the following 3 hours would be the first of 3 scariest moments in my 100 hour challenge.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d4.png" alt="Living on Nothing 5">
+                            <img src="images/2/d5.png" alt="Living on Nothing 6">
+                        </div>
+                        <p>
+                            Around 5pm, I arrives on campus at MIT, visiting different libraries and scouting for a place to sleep. As I was walking around the libraries, I met a meek chinese girl who looks to be a college freshman. Seeing her gives me an idea. If I'm walking alone looking lost around campus, I might look suspicious and draw too much attention to myself. <b><u>What if</u></b> I ask her to give me a tour around campus? I chatted with her and she happily gave me a tour around campus. After 30 minutes into the tour and seeing how easily we connected over shared interests, I thought to myself, "<b><u>What if</u></b> I went one step further and ask if I could spend the night in her dorm room?" (it would be alot safer than sleeping in the library). Unfortunately, her parent were staying with her for the weekend and she did not have enough space to accommodate me. Oh well, I thought, I now know where the 24/7 library was and I could still sleep there.
+                        </p>
+                        <img src="images/2/d6.png" alt="Living on Nothing 7">
+                        <p>
+                            So I went to scout the 24/7 section in the library. The entrance to the room had a card scanner lock and the room was a very small circular study space away from any bookshelves with visible cameras in every quadrant. I did not have any study books with me, and everyone that was there were studying intently. Fear starts creeping up through my veins as I realized that without any books on hand it would look very out of place for someone to just go to the library to rest their head on the desk and fall asleep. Worst yet, as I looked over one of the room divider, a sign stood erect stating that even though the library was open 24/7, everyone in the room needed to have an MIT ID after 6pm. What this meant was that even if I did manage to fall asleep in this area, I could potentially get arrested for illegal trespassing if security woke me up and asked for an ID.
+                        </p>
+                        <img src="images/2/d7.png" alt="Living on Nothing 8">
+                        <p>
+                            I spent the next 2 hours scrambling around campus, to various study halls, gyms, dining rooms, and event sport fields, looking for another place that was open 24/7 where a student without ID could sleep.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d8.png" alt="Living on Nothing 9">
+                            <img src="images/2/d9.png" alt="Living on Nothing 10">
+                        </div>
+                        <p>
+                            When 8:30pm comes around, students were outside enjoying delicious boba and the smell of salty grilled sandwiches fill the air. As for me, the sights and smells were a mockery of my current predicament. I had a few hundred dollars and my credit card in my wallet incase of emergency, but my own pride did not permit me the freedom to enjoy the street foods as I grow more and more desperate to find shelter for the night as the sky slowly darkens.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d10.png" alt="Living on Nothing 11">
+                        </div>
+                        <p>
+                            Standing outside the largest building at MIT ("The Infinite") underneath a pitch black sky, I was contemplating tossing my pride aside and go book a hotel. Just then, two approachable looking students walked outside the building to return to their dormroom, talking excitedly with each other about their plans for tomorrow. "I'll try just one more time", I thought. "It was late and staying outside in freezing temperature could be fatal, If they reject me then I'll book a hotel and try again tomorrow"
+                        </p>
+                        <p>
+                            I approached the two guys and asked, with obvious desperation in my voice, "Are either of you willing to let me sleep in your dorm room? I am from out of town and I don't have a place to sleep for the night" One guy completely ignored me like I was a dirty vagrant, but the other looked at me, pausing for a brief second, let out a laugh, and jovially said, "I can't let you in the dorms, but there is a common room inside the building behind us that may let you sleep overnight. There are couches and bean bags to sleep. It's call the 'Banana Lounge' because there are free bananas in the room for student to snack on while studying. I have to go but ask someone inside if they'll show you the way." 
+                        </p>
+                        <img src="images/2/d11.png" alt="Living on Nothing 12">
+                        <p>
+                            The building behind us, just like most other buildings at MIT, were locked with a smart card reader. Fortunately, one of the three doors were slightly propped open and I could walk inside. Getting inside the building is only the first step though, I needed to find one room along 4 corridors that seem to go on endlessly (It is literally named the "Infinite Corridor") Fortunately, it seems like everything finally fell into place. Barely 2 minutes has passed after walking down one corridor, I encountered a student walking toward me holding the largest banana I had ever seen. I asked him for direction to the Banana Lounge and at last I found my sanctuary. 
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d12.png" alt="Living on Nothing 13">
+                            <img src="images/2/d13.png" alt="Living on Nothing 14">
+                        </div>
+                        <p>
+                            The banana lounge may not be as luxurious as a hotel or as spacious as an Airbnb, but for someone who had spent the last 3 hours desperately scurrying around campus to find a place to sleep, the small hard sofa felt like the coziest bed in the world, and about an hour later I managed to have my first sleep of the 100 hour challenge.
+                        </p>
+                        <img src="images/2/d14.png" alt="Living on Nothing 15">
+                        <p>
+                            The following morning I woke up at 5am to a completely empty banana lounge and explored the soundless infinite corridor (the long narrow hallway gets very scary in the middle of the night with not a soul in sight).
+                        </p>
+                        <p>
+                            I brushed my teeth in the bathroom, tailgated a student into the gym for a quick shower, and took the subway to a nearby gaming convention where I spent most of the day working and playing.
+                        </p>
+                        <p>
+                            Returning to the infinite building around 7pm, I was ready to once again rest my head at the banana lounge and sleep, but upon approaching the main entrance, I quickly discovered that the glass door that was propped open yesterday was shut tight today and would only open whenever a student tapped their key card on the smart reader. So I went around the building to look for a side entrance. While walking around the back of the building, I saw a Laos woman in her 50s striding toward the building so I approached and ask if she was a professor at MIT. She told me that she was a cleaner and she is still learning English, and so I followed her into the back entrance while chatting about grammar rules. Once inside, I went directly into the banana lounge and slept on the black bean bag which was much softer than the sofa, dozing off contently as some MIT students were discussing their weekend plans.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d15.png" alt="Living on Nothing 16">
+                            <img src="images/2/d16.png" alt="Living on Nothing 17">
+                            <img src="images/2/d17.png" alt="Living on Nothing 18">
+                        </div>
+                        <p>
+                            On Friday, I woke up early again to explore more of MIT, took the subway to Harvard university, look at local art exhibits, and returned to the Banana lounge around 9pm (the front door to the building was once again propped open). Once inside, I saw a man in his 50s walking around looking at the various posters on the wall. He was a very talkative man and could speak about any topics for hours. I told him that I came from Georgia and is only here for 5 days to attend a convention, finding it less costly to sleep in the Banana Lounge than in a hotel. He narrated his life story going through many homelessness and hitchhiking situations and after about 3 hours of chatting into 1am in the morning, we exchanged numbers and as he walked out the door to return to his apartment. He left me with a casual remark while exiting "If you ever get bored of sleeping here, just give me a call and we can talk more at my place".
+                        </p>
+                        <p>
+                            Another student was studying in the room with us, and after the chatty man left, he came over to warn me that the guy looked like he was homeless and mentally disturbed for going into a university late at night and talking for hours. I kept both the student's warning and the man's offer to sleep at his place in mind as I doze off to sleep on the third night of the trip.
+                        </p>
+                        <div class="description-image-container">
+                            <img src="images/2/d18.png" alt="Living on Nothing 19">
+                            <img src="images/2/d19.png" alt="Living on Nothing 20">
+                        </div>
+                        <p>
+                            Did I take the chatty man up on his offer? Find out in the next module:<a href="#" class="trigger-card-3 text-blue-400 hover:text-blue-200 block mt-2">What if I slept with a serial killer?</a>
+                        </p>
                     </div>
                 </div>
 
-                <!-- Adventure Card 3: Traveling Circus -->
+                <!-- Adventure Card 3: Sleeping with a Stranger -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <img src="https://placehold.co/400x250/C084FC/ffffff?text=Traveling+Circus" alt="Traveling Circus Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
-                    <h3 class="text-2xl font-semibold mb-3">What if I joined a traveling circus?</h3>
+                    <img src="https://placehold.co/400x250/C084FC/ffffff?text=Traveling+Circus" alt="Traveling Circus Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
+                    <h3 class="text-2xl font-semibold mb-3">What if I slept with a serial killer?</h3>
                     <p class="leading-relaxed mb-4 text-sm">
-                        A fascinating week immersed in the nomadic and skilled world of a small, independent traveling circus.
+                        What if you decide to spend the night with a man whom you had only met the day before without knowing much about his past?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
                     <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
-                        Life under the big top is far from glamorous, but it's incredibly rich in dedication and camaraderie. I spent a week helping with everything from setting up tents to feeding the animals and even assisting with costume changes. The performers, often from generations of circus families, were incredibly welcoming and passionate. I even got a rudimentary lesson in juggling! It was an eye-opening experience into a unique subculture built on trust, hard work, and dazzling entertainment.
+                        <div class="modal-image-gallery">
+                            <img src="https://placehold.co/150x100/C084FC/ffffff?text=Circus+View+1" alt="Circus View 1">
+                            <img src="https://placehold.co/150x100/818CF8/ffffff?text=Circus+View+2" alt="Circus View 2">
+                            <img src="https://placehold.co/150x100/A78BFA/ffffff?text=Circus+View+3" alt="Circus View 3">
+                        </div>
+                        <p>
+                            This is a continuation of "<a href="#" class="trigger-card-2 text-blue-400 hover:text-blue-200">What if I was homeless for 100 hours</a>".
+                        </p>
+                        <p>
+                            I drank a lot of water last night while chatting with the man in his 50s who shared a last name with The Jigsaw Killer so I woke up at 5am to go to the restroom. When I returned, the door to the banana lounge was locked with my backpack inside. The student's warning immediately came to mind and I feared that the man may have been a thief who might have took off with my belongings when I went to the restroom. I patrolled the area for about 20 minutes when I saw a cleaner coming out of the lounge and stepped inside as he held the door opened. I gathered my belongings and starts my 4th day in Boston on 4 hours of sleep.
+                        </p>
+                        <p>
+                            As it was still early in the morning, I set out on a mini challenge to take the Boston 'T' Subway to the end of the line, walk straight in one direction for an hour, and see where I ends up.
+                        </p>
                     </div>
                 </div>
 
                 <!-- New Adventure Card 4: Ocean Sailing -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <img src="https://placehold.co/400x250/6EE7B7/ffffff?text=Ocean+Sail" alt="Ocean Sail Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <img src="https://placehold.co/400x250/6EE7B7/ffffff?text=Ocean+Sail" alt="Ocean Sail Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I learned to sail across the ocean?</h3>
                     <p class="leading-relaxed mb-4 text-sm">
                         Embarking on a journey to master sailing and navigate the vast, unpredictable open ocean.
@@ -472,13 +726,19 @@
                     </p>
                     <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
-                        The idea of being solely reliant on the wind and my own navigation skills was both terrifying and exhilarating. I spent months learning the basics, from tying knots to understanding charts, before joining a crew for a transatlantic voyage. There were days of calm, breathtaking sunsets, and challenging storms that tested every ounce of my resolve. It was an incredible lesson in patience, resilience, and the sheer power of nature. The sense of accomplishment upon reaching the other side was unparalleled.
+                        <div class="modal-image-gallery">
+                            <img src="https://placehold.co/150x100/6EE7B7/ffffff?text=Ocean+View+1" alt="Ocean View 1">
+                            <img src="https://placehold.co/150x100/FCD34D/ffffff?text=Ocean+View+2" alt="Ocean View 2">
+                            <img src="https://placehold.co/150x100/FFA500/ffffff?text=Ocean+View+3" alt="Ocean View 3">
+                        </div>
+                        <p>The idea of being solely reliant on the wind and my own navigation skills was both terrifying and exhilarating. I spent months learning the basics, from tying knots to understanding charts, before joining a crew for a transatlantic voyage. There were days of calm, breathtaking sunsets, and challenging storms that tested every ounce of my resolve. It was an incredible lesson in patience, resilience, and the sheer power of nature. The sense of accomplishment upon reaching the other side was unparalleled.</p>
+                        <p>Living at sea for weeks on end forced a complete re-evaluation of necessities. Every sunrise and sunset was a masterpiece, and the stars at night were unlike anything seen on land. This experience instilled a deep respect for the ocean and a profound understanding of self-reliance, proving that true freedom can be found far from shore.</p>
                     </div>
                 </div>
 
                 <!-- New Adventure Card 5: Off-Grid Living -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <img src="https://placehold.co/400x250/FCD34D/ffffff?text=Off-Grid+Living" alt="Off-Grid Living Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover">
+                    <img src="https://placehold.co/400x250/FCD34D/ffffff?text=Off-Grid+Living" alt="Off-Grid Living Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I tried living entirely off-grid for a month?</h3>
                     <p class="leading-relaxed mb-4 text-sm">
                         A month-long experiment in complete self-sufficiency, disconnected from modern utilities.
@@ -486,7 +746,13 @@
                     </p>
                     <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
-                        This "what if" was a profound test of resourcefulness. For thirty days, I relied on solar power, collected rainwater, cooked over an open fire, and grew my own food. It was challenging, humbling, and surprisingly liberating. I learned invaluable skills, appreciated simple comforts more deeply, and developed a profound connection with the natural world. It taught me how much we rely on infrastructure and how capable we are when pushed to adapt.
+                        <div class="modal-image-gallery">
+                            <img src="https://placehold.co/150x100/FCD34D/ffffff?text=Off-Grid+View+1" alt="Off-Grid View 1">
+                            <img src="https://placehold.co/150x100/6EE7B7/ffffff?text=Off-Grid+View+2" alt="Off-Grid View 2">
+                            <img src="https://placehold.co/150x100/818CF8/ffffff?text=Off-Grid+View+3" alt="Off-Grid View 3">
+                        </div>
+                        <p>This "what if" was a profound test of resourcefulness. For thirty days, I relied on solar power, collected rainwater, cooked over an open fire, and grew my own food. It was challenging, humbling, and surprisingly liberating. I learned invaluable skills, appreciated simple comforts more deeply, and developed a profound connection with the natural world. It taught me how much we rely on infrastructure and how capable we are when pushed to adapt.</p>
+                        <p>The initial days were tough, filled with trial and error, but a rhythm soon emerged. The quiet of the wilderness and the satisfaction of self-provisioning were incredibly rewarding. This experience truly redefined what "essential" means and ignited a passion for sustainable living beyond the month-long challenge.</p>
                     </div>
                 </div>
             </div>
@@ -548,7 +814,7 @@
         <div class="modal-content">
             <button id="modal-close" class="modal-close">&times;</button>
             <h2 id="modal-title" class="modal-title"></h2>
-            <p id="modal-content" class="modal-body"></p>
+            <div id="modal-content" class="modal-body"></div>
         </div>
     </div>
 </body>
