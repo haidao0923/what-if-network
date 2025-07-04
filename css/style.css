@@ -1,0 +1,202 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a1a2e; /* Dark blue/purple background */
+    color: #e0e0e0; /* Light gray text */
+}
+.container {
+    max-width: 1200px;
+}
+/* Custom styles for gradients and shadows */
+.gradient-button {
+    background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    transition: all 0.3s ease;
+}
+.gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Darker shadow for dark theme */
+}
+.card {
+    background-color: #2e2e4a; /* Slightly lighter dark blue/purple for cards */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15); /* Darker shadow */
+    transition: transform 0.3s ease;
+    color: #e0e0e0; /* Light text within cards */
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+/* Hide scrollbar for aesthetic purposes (optional) */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+/* Optional: Add a grab cursor when hovering over the scrollable area */
+.flex.overflow-x-auto {
+    cursor: grab;
+}
+.flex.overflow-x-auto.active-drag {
+    cursor: grabbing;
+}
+/* Specific styling for the WIN header */
+.win-header {
+    font-size: 5rem; /* Larger font size for emphasis */
+    line-height: 0.9; /* Adjust line height to bring words closer */
+    display: inline-block; /* Allows width to shrink to content */
+    text-align: left; /* Left align the entire block */
+    font-weight: 900; /* Make the whole header bolder */
+    background-image: none; /* Removed background gradient */
+    padding: 0; /* Removed padding */
+    border-radius: 0; /* Removed border-radius */
+    color: #e0e0e0; /* Default text color for the rest of the words (light) */
+}
+.win-header span {
+    display: block; /* Each word on its own line */
+    color: inherit; /* Inherit color from parent h1 (white) */
+}
+.win-header .emphasized-letter {
+    font-weight: 900; /* Extra bold for emphasized letters */
+    background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
+    -webkit-background-clip: text; /* Clip background to text */
+    background-clip: text;
+    -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
+    text-fill-color: transparent;
+    display: inline; /* Keep it inline to be part of the word */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Subtle shadow for pop and contrast */
+}
+/* Adjust word spacing for the specific alignment */
+.win-header .word-if {
+    margin-left: 30px; /* Adjusted to 30px */
+}
+.win-header .word-network {
+    margin-left: 10px; /* Adjusted to 10px */
+}
+
+/* Adjustments for general text colors on dark theme */
+h2 {
+    color: #e0e0e0; /* Light headings */
+}
+.card h3 { /* Specific rule for adventure card titles */
+    color: #e0e0e0; /* Reverted to light gray */
+}
+p {
+    color: #c0c0c0; /* Slightly darker light text for paragraphs */
+}
+label {
+    color: #e0e0e0; /* Light labels for form */
+}
+input, textarea {
+    background-color: #3a3a5e; /* Darker input fields */
+    border-color: #5a5a7e; /* Darker border for inputs */
+    color: #e0e0e0; /* Light text in inputs */
+}
+input:focus, textarea:focus {
+    ring-color: #8e2de2; /* Adjusted focus ring color */
+    border-color: #8e2de2; /* Adjusted focus border color */
+}
+/* Call to action button text color */
+#share-story-button {
+    color: #1a1a2e; /* Dark text on white button */
+}
+
+/* Call to Action Phrase Emphasis */
+.cta-phrase .emphasized-you {
+    font-weight: 900;
+    background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    display: inline;
+}
+
+/* Ensure header text alignment is respected by its parent */
+header {
+    text-align: center; /* Center the entire header block */
+}
+header p { /* Center the quote also */
+    text-align: center;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+.modal-content {
+    background-color: #2e2e4a; /* Card background color for modal */
+    padding: 2rem;
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto; /* Enable scrolling for long content */
+    position: relative;
+    color: #e0e0e0; /* Light text */
+}
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #e0e0e0;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+.modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.modal-title {
+    font-size: 2.25rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    margin-bottom: 1rem;
+    color: #FFA500; /* Orange color for modal title */
+    text-align: center; /* Center the modal title */
+}
+.modal-body p { /* Target paragraphs within the modal body */
+    margin-bottom: 1rem; /* Add space between paragraphs */
+    line-height: 1.6; /* Ensure good readability */
+    color: #c0c0c0; /* Consistent text color */
+}
+.modal-body img {
+    display: flex;
+    justify-content: center; /* Center images horizontally */
+    margin-bottom: 1rem; /* Add space between paragraphs */
+    max-height:300px;
+    width: auto;
+}
+.description-image-container {
+    display: flex;
+    gap: 0.5rem; /* Space between images */
+    flex-wrap: wrap; /* Allow images to wrap on smaller screens */        
+}
+/* Styling for images within the modal */
+.modal-image-gallery {
+    display: flex;
+    justify-content: center; /* Center images horizontally */
+    gap: 0.5rem; /* Space between images */
+    flex-wrap: wrap; /* Allow images to wrap on smaller screens */
+}
+.modal-image-gallery img, .description-image-container img {
+    width: 30%; /* Approx 1/3 width for 3 images, allowing for gap */
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.5rem; /* rounded corners */
+    object-fit: cover; /* Cover the area without distortion */
+    min-width: 80px; /* Minimum width for very small screens */
+    max-width:300px;
+}

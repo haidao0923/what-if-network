@@ -4,507 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What If Network</title>
-    <!-- Tailwind CSS CDN -->
+    <link rel="icon" href="images/icon.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <!-- EmailJS CDN -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        // Initialize EmailJS with your Public Key
-        // IMPORTANT: Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS Public Key
-        (function() {
-            emailjs.init({
-                publicKey: "Wj1wGSlJqR_HvHw2U", // Replace with your Public Key from EmailJS
-            });
-        })();
-
-        window.onload = function() {
-            const contactForm = document.getElementById('contact-form');
-            const statusMessage = document.getElementById('status-message');
-
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent default form submission
-
-                    statusMessage.textContent = 'Sending...';
-                    statusMessage.className = 'mt-4 text-center text-blue-400 font-medium'; // Adjusted color for dark theme
-
-                    // Prepare template parameters from form fields
-                    const templateParams = {
-                        name_from: contactForm.name.value,
-                        email_from: contactForm.email.value,
-                        message: contactForm.message.value
-                    };
-
-                    // Send the email using EmailJS
-                    // IMPORTANT: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID'
-                    // with your actual EmailJS Service ID and Template ID
-                    emailjs.send('service_atdncm5', 'template_i7ko30h', templateParams)
-                        .then(function(response) {
-                            console.log('SUCCESS!', response.status, response.text);
-                            statusMessage.textContent = 'Message sent successfully!';
-                            statusMessage.className = 'mt-4 text-center text-green-400 font-medium'; // Adjusted color
-                            contactForm.reset(); // Clear the form
-                        }, function(error) {
-                            console.log('FAILED...', error);
-                            statusMessage.textContent = 'Failed to send message. Please try again.';
-                            statusMessage.className = 'mt-4 text-center text-red-400 font-medium'; // Adjusted color
-                        });
-                });
-            } else {
-                console.error("Contact form not found!");
-            }
-
-            // --- JavaScript for Horizontal Drag-to-Scroll ---
-            const scrollContainer = document.querySelector('.flex.overflow-x-auto');
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            if (scrollContainer) {
-                scrollContainer.addEventListener('mousedown', (e) => {
-                    // Check if the click is on an image or inside the card, but prevent default image dragging
-                    if (e.target.tagName === 'IMG') {
-                        e.preventDefault(); // Prevent default image drag behavior
-                    }
-                    isDown = true;
-                    scrollContainer.classList.add('active-drag'); // Add a class for visual feedback if needed
-                    startX = e.pageX - scrollContainer.offsetLeft;
-                    scrollLeft = scrollContainer.scrollLeft;
-                    // Pause auto-scroll when user starts dragging
-                    cancelAnimationFrame(animationFrameId);
-                });
-
-                scrollContainer.addEventListener('mouseleave', () => {
-                    isDown = false;
-                    scrollContainer.classList.remove('active-drag');
-                    // Resume auto-scroll when mouse leaves
-                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
-                        startAutoScroll();
-                    }
-                });
-
-                scrollContainer.addEventListener('mouseup', () => {
-                    isDown = false;
-                    scrollContainer.classList.remove('active-drag');
-                    // Resume auto-scroll when drag ends
-                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
-                        startAutoScroll();
-                    }
-                });
-
-                scrollContainer.addEventListener('mousemove', (e) => {
-                    if (!isDown) return; // Stop the function from running when the mouse is not clicked
-                    e.preventDefault(); // Prevent text selection or other default behaviors
-                    const x = e.pageX - scrollContainer.offsetLeft;
-                    const walk = (x - startX) * 2; // Multiplier for scroll speed
-                    scrollContainer.scrollLeft = scrollLeft - walk;
-                });
-
-                // Also add touch events for mobile compatibility
-                scrollContainer.addEventListener('touchstart', (e) => {
-                    if (e.target.tagName === 'IMG') {
-                        e.preventDefault(); // Prevent default image drag behavior on touch
-                    }
-                    isDown = true;
-                    startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-                    scrollLeft = scrollContainer.scrollLeft;
-                    // Pause auto-scroll on touch start
-                    cancelAnimationFrame(animationFrameId);
-                });
-
-                scrollContainer.addEventListener('touchend', () => {
-                    isDown = false;
-                    // Resume auto-scroll on touch end
-                    if (!isPausedByHover) { // Only resume if not explicitly paused by hover
-                        startAutoScroll();
-                    }
-                });
-
-                scrollContainer.addEventListener('touchmove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-                    const walk = (x - startX) * 2;
-                    scrollContainer.scrollLeft = scrollLeft - walk;
-                });
-
-                // Prevent default drag behavior on images specifically
-                const images = scrollContainer.querySelectorAll('img');
-                images.forEach(img => {
-                    img.ondragstart = () => false;
-                });
-            }
-            // --- End JavaScript for Horizontal Drag-to-Scroll ---
-
-            // --- Scroll to Contact Section ---
-            const shareStoryButton = document.getElementById('share-story-button');
-            const contactSection = document.getElementById('contact-section');
-
-            if (shareStoryButton && contactSection) {
-                shareStoryButton.addEventListener('click', function() {
-                    contactSection.scrollIntoView({ behavior: 'smooth' });
-                });
-            } else {
-                console.error("Share story button or contact section not found!");
-            }
-            // --- End Scroll to Contact Section ---
-
-            // --- Auto-Scrolling Adventure Cards ---
-            let animationFrameId;
-            let scrollSpeed = 0.5; // Adjust scroll speed here
-            let isPausedByHover = false;
-
-            function animateScroll() {
-                if (!scrollContainer) return; // Exit if container not found
-
-                if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 1) {
-                    // If scrolled to the end, reset to beginning (loop)
-                    scrollContainer.scrollLeft = 0;
-                } else {
-                    scrollContainer.scrollLeft += scrollSpeed;
-                }
-                animationFrameId = requestAnimationFrame(animateScroll);
-            }
-
-            function startAutoScroll() {
-                // Clear any existing animation frame to prevent multiple loops
-                cancelAnimationFrame(animationFrameId);
-                animationFrameId = requestAnimationFrame(animateScroll);
-            }
-
-            // Pause auto-scroll on hover (for mouse users)
-            if (scrollContainer) {
-                scrollContainer.addEventListener('mouseenter', () => {
-                    isPausedByHover = true;
-                    cancelAnimationFrame(animationFrameId);
-                });
-                scrollContainer.addEventListener('mouseleave', () => {
-                    isPausedByHover = false;
-                    // Only restart if not currently dragging
-                    if (!isDown) {
-                        startAutoScroll();
-                    }
-                });
-            }
-
-            // Start the auto-scroll when the page loads
-            startAutoScroll();
-            // --- End Auto-Scrolling Adventure Cards ---
-
-            // --- Modal Logic ---
-            const modalOverlay = document.getElementById('modal-overlay');
-            const modalTitle = document.getElementById('modal-title');
-            const modalContent = document.getElementById('modal-content');
-            const modalCloseButton = document.getElementById('modal-close');
-
-            // Handler for the specific trigger link
-            function handleTriggerCard3Click(e) {
-                e.preventDefault();
-                // Get Adventure Card 3's elements (which is the 3rd card in the HTML structure)
-                const card3 = document.querySelector('.card:nth-of-type(3)');
-                if (card3) {
-                    const title3 = card3.querySelector('h3').textContent;
-                    const fullDescriptionHtml3 = card3.querySelector('.full-description').innerHTML;
-
-                    // Update the current modal's content
-                    modalTitle.textContent = title3;
-                    modalContent.innerHTML = fullDescriptionHtml3;
-                    // Re-attach listeners for any new dynamic links within the updated content
-                    attachDynamicLinkListeners();
-                } else {
-                    console.error("Adventure Card 3 (Sleeping with a Stranger) not found!");
-                }
-            }
-
-            // Handler for the specific trigger link to Card 2
-            function handleTriggerCard2Click(e) {
-                e.preventDefault();
-                const card2 = document.querySelector('.card:nth-of-type(2)');
-                if (card2) {
-                    const title2 = card2.querySelector('h3').textContent;
-                    const fullDescriptionHtml2 = card2.querySelector('.full-description').innerHTML;
-                    modalTitle.textContent = title2;
-                    modalContent.innerHTML = fullDescriptionHtml2;
-                    attachDynamicLinkListeners(); // Re-attach listeners for any new dynamic links
-                } else {
-                    console.error("Adventure Card 2 (Homeless for 100 hours) not found!");
-                }
-            }
-
-            // Function to attach listeners to dynamic links
-            function attachDynamicLinkListeners() {
-                // Remove existing listeners to prevent duplicates
-                document.querySelectorAll('.trigger-card-3').forEach(link => {
-                    link.removeEventListener('click', handleTriggerCard3Click);
-                });
-                document.querySelectorAll('.trigger-card-2').forEach(link => {
-                    link.removeEventListener('click', handleTriggerCard2Click);
-                });
-
-                // Add new listeners
-                document.querySelectorAll('.trigger-card-3').forEach(link => {
-                    link.addEventListener('click', handleTriggerCard3Click);
-                });
-                document.querySelectorAll('.trigger-card-2').forEach(link => {
-                    link.addEventListener('click', handleTriggerCard2Click);
-                });
-            }
-
-            
-            document.querySelectorAll('.read-more-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.error("Yay");
-                    const card = this.closest('.card'); // Get the parent card
-                    const title = card.querySelector('h3').textContent;
-                    // Get the full description from the hidden div (innerHTML to preserve paragraphs)
-                    const fullDescriptionHtml = card.querySelector('.full-description').innerHTML;
-
-                    modalTitle.textContent = title;
-                    // Directly set the innerHTML, including images and paragraphs
-                    modalContent.innerHTML = fullDescriptionHtml;
-
-                    modalOverlay.classList.remove('hidden'); // Show the modal
-                    attachDynamicLinkListeners();
-                });
-            });
-
-            modalCloseButton.addEventListener('click', () => {
-                modalOverlay.classList.add('hidden'); // Hide the modal
-                console.error("Yay");
-            });
-
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) { // Only close if clicking on the overlay, not the modal content
-                    modalOverlay.classList.add('hidden');
-                    console.error("Yay");
-                }
-            });
-            
-            attachDynamicLinkListeners(); 
-            // --- End Modal Logic ---
-        };
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1a1a2e; /* Dark blue/purple background */
-            color: #e0e0e0; /* Light gray text */
-        }
-        .container {
-            max-width: 1200px;
-        }
-        /* Custom styles for gradients and shadows */
-        .gradient-button {
-            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-            transition: all 0.3s ease;
-        }
-        .gradient-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Darker shadow for dark theme */
-        }
-        .card {
-            background-color: #2e2e4a; /* Slightly lighter dark blue/purple for cards */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15); /* Darker shadow */
-            transition: transform 0.3s ease;
-            color: #e0e0e0; /* Light text within cards */
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        /* Hide scrollbar for aesthetic purposes (optional) */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        /* Optional: Add a grab cursor when hovering over the scrollable area */
-        .flex.overflow-x-auto {
-            cursor: grab;
-        }
-        .flex.overflow-x-auto.active-drag {
-            cursor: grabbing;
-        }
-        /* Specific styling for the WIN header */
-        .win-header {
-            font-size: 5rem; /* Larger font size for emphasis */
-            line-height: 0.9; /* Adjust line height to bring words closer */
-            display: inline-block; /* Allows width to shrink to content */
-            text-align: left; /* Left align the entire block */
-            font-weight: 900; /* Make the whole header bolder */
-            background-image: none; /* Removed background gradient */
-            padding: 0; /* Removed padding */
-            border-radius: 0; /* Removed border-radius */
-            color: #e0e0e0; /* Default text color for the rest of the words (light) */
-        }
-        .win-header span {
-            display: block; /* Each word on its own line */
-            color: inherit; /* Inherit color from parent h1 (white) */
-        }
-        .win-header .emphasized-letter {
-            font-weight: 900; /* Extra bold for emphasized letters */
-            background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
-            -webkit-background-clip: text; /* Clip background to text */
-            background-clip: text;
-            -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
-            text-fill-color: transparent;
-            display: inline; /* Keep it inline to be part of the word */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Subtle shadow for pop and contrast */
-        }
-        /* Adjust word spacing for the specific alignment */
-        .win-header .word-if {
-            margin-left: 30px; /* Adjusted to 30px */
-        }
-        .win-header .word-network {
-            margin-left: 10px; /* Adjusted to 10px */
-        }
-
-        /* Adjustments for general text colors on dark theme */
-        h2 {
-            color: #e0e0e0; /* Light headings */
-        }
-        .card h3 { /* Specific rule for adventure card titles */
-            color: #e0e0e0; /* Reverted to light gray */
-        }
-        p {
-            color: #c0c0c0; /* Slightly darker light text for paragraphs */
-        }
-        label {
-            color: #e0e0e0; /* Light labels for form */
-        }
-        input, textarea {
-            background-color: #3a3a5e; /* Darker input fields */
-            border-color: #5a5a7e; /* Darker border for inputs */
-            color: #e0e0e0; /* Light text in inputs */
-        }
-        input:focus, textarea:focus {
-            ring-color: #8e2de2; /* Adjusted focus ring color */
-            border-color: #8e2de2; /* Adjusted focus border color */
-        }
-        /* Call to action button text color */
-        #share-story-button {
-            color: #1a1a2e; /* Dark text on white button */
-        }
-
-        /* Call to Action Phrase Emphasis */
-        .cta-phrase .emphasized-you {
-            font-weight: 900;
-            background-image: linear-gradient(to right, #FFA500, #FF6347); /* Orange gradient */
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-fill-color: transparent;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-            display: inline;
-        }
-
-        /* Ensure header text alignment is respected by its parent */
-        header {
-            text-align: center; /* Center the entire header block */
-        }
-        header p { /* Center the quote also */
-            text-align: center;
-        }
-
-        /* Modal Styling */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000; /* Ensure it's on top of other content */
-        }
-        .modal-content {
-            background-color: #2e2e4a; /* Card background color for modal */
-            padding: 2rem;
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow */
-            max-width: 90%;
-            max-height: 90%;
-            overflow-y: auto; /* Enable scrolling for long content */
-            position: relative;
-            color: #e0e0e0; /* Light text */
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #e0e0e0;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
-        }
-        .modal-close:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .modal-title {
-            font-size: 2.25rem; /* text-3xl */
-            font-weight: 700; /* font-bold */
-            margin-bottom: 1rem;
-            color: #FFA500; /* Orange color for modal title */
-            text-align: center; /* Center the modal title */
-        }
-        .modal-body p { /* Target paragraphs within the modal body */
-            margin-bottom: 1rem; /* Add space between paragraphs */
-            line-height: 1.6; /* Ensure good readability */
-            color: #c0c0c0; /* Consistent text color */
-        }
-        .modal-body img {
-            display: flex;
-            justify-content: center; /* Center images horizontally */
-            margin-bottom: 1rem; /* Add space between paragraphs */
-            max-height:300px;
-            width: auto;
-        }
-        .description-image-container {
-            display: flex;
-            gap: 0.5rem; /* Space between images */
-            flex-wrap: wrap; /* Allow images to wrap on smaller screens */        
-        }
-        /* Styling for images within the modal */
-        .modal-image-gallery {
-            display: flex;
-            justify-content: center; /* Center images horizontally */
-            gap: 0.5rem; /* Space between images */
-            flex-wrap: wrap; /* Allow images to wrap on smaller screens */
-        }
-        .modal-image-gallery img, .description-image-container img {
-            width: 30%; /* Approx 1/3 width for 3 images, allowing for gap */
-            height: auto;
-            aspect-ratio: 1 / 1;
-            border-radius: 0.5rem; /* rounded corners */
-            object-fit: cover; /* Cover the area without distortion */
-            min-width: 80px; /* Minimum width for very small screens */
-            max-width:300px;
-        }
-        /* Adjust for smaller screens */
-        @media (max-width: 640px) {
-            .modal-image-gallery img {
-                width: 48%; /* Two images per row on small screens */
-            }
-        }
-        @media (max-width: 400px) {
-            .modal-image-gallery img {
-                width: 90%; /* One image per row on very small screens */
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="antialiased">
     <div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <!-- Header Section -->
         <header class="text-center mb-12 w-full max-w-2xl mx-auto">
             <h1 class="transform hover:scale-105 transition-transform duration-300 ease-in-out win-header">
                 <span><span class="emphasized-letter">W</span>hat</span>
@@ -516,14 +23,11 @@
             </p>
         </header>
 
-        <!-- Adventures Section -->
         <section class="w-full container mx-auto px-4 mb-16">
             <h2 class="text-4xl font-bold text-left mb-10 pb-2 border-b-4 border-purple-500 inline-block px-4">
                 My "What If" Adventures
             </h2>
-            <!-- Horizontal Scroll Container for Cards -->
             <div class="flex overflow-x-auto snap-x snap-mandatory py-4 gap-8 scrollbar-hide">
-                <!-- Adventure Card 1: Bahamas Hike -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
                     <img src="images/1/main.png" alt="Island Hike Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I chose the unpaved road?</h3>
@@ -531,7 +35,6 @@
                         When taking a vacation to the Bahamas, most people imagine sunbathing on the white sandy beach or swimming in the clear blue water, what if I instead decide to just start walking up the hill and see where nature takes me?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
-                    <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
                         <div class="modal-image-gallery">
                             <img src="images/1/d0.png" alt="Bahamas View 1">
@@ -576,7 +79,6 @@
                     </div>
                 </div>
 
-                <!-- Adventure Card 2: Living on Nothing -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
                     <img src="images/2/main.png" alt="Living on Nothing Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I was homeless for 100 hours?</h3>
@@ -584,7 +86,6 @@
                         Traveling to another state for 5 days sounds fun... but is it still fun if you did not have a place to sleep? What if I did that on purpose to see if it was possible to live on only the kindness of completely strangers?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
-                    <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
                         <div class="modal-image-gallery">
                             <img src="images/2/d0.png" alt="Living on Nothing 1">
@@ -689,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- Adventure Card 3: Sleeping with a Stranger -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
                     <img src="https://placehold.co/400x250/C084FC/ffffff?text=Sleeping+With+Stranger" alt="Sleeping with a Stranger Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I slept with a serial killer?</h3>
@@ -697,7 +197,6 @@
                         What if you decide to spend the night with a man whom you had only met the day before without knowing much about his past?
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
-                    <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
                         <div class="modal-image-gallery">
                             <img src="images/3/d0.png" alt="Sleeping with a Stranger 1">
@@ -708,28 +207,45 @@
                             This is a continuation of "<a href="#" class="trigger-card-2 text-blue-400 hover:text-blue-200">What if I was homeless for 100 hours</a>".
                         </p>
                         <p>
-                            I drank a lot of water last night while chatting with the man in his 50s so I woke up at 5am to go to the restroom. When I returned, the door to the banana lounge was locked with my backpack inside. The student's warning immediately popped into my mind and I feared that the man may have been a thief who took off with my belongings and locked the door. I patrolled the area for about 20 minutes being seeing a cleaner coming out of the lounge. I rushed over and made brief small talks as he held the door open for me to enter. After enjoying a cup of coffee in the lounge, I gathered my belongings and starts my 4th day in Boston on 4 hours of sleep.
+                            I drank a lot of water last night while chatting with the man in his 50s so I woke up at 5am to go to the restroom. When I returned, the door to the banana lounge was locked with my backpack inside. The student's warning immediately popped into my mind and I feared that the man may have been a thief who took off with my belongings and locked the door. I patrolled the area for about 20 minutes before seeing a cleaner coming out of the lounge. I rushed over and made brief small talks as he held the door open for me to enter. After enjoying a cup of coffee in the lounge, I gathered my belongings and starts my 4th day in Boston on 4 hours of sleep.
                         </p>
-                        <img src="images/3/d1.png" alt="Sleeping with a Stranger 2">
+                        <img src="images/3/d0.png" alt="Sleeping with a Stranger 1">
                         <p>
-                            As it was still early in the morning, I set out on a mini challenge to take the Boston 'T' Subway to the end of the line, walk straight in one direction for an hour, and see where I end up. Aside from a wonderful walk in the cool windy weather, I did not encounter much in this remote area except for a few stores selling delicious and cheap cookies which I bought for lunch. 
+                            As it was still early in the morning, I set out on a mini challenge to take the Boston 'T' Subway to the end of the line, walk straight in one direction for an hour, and see where I end up. Aside from a wonderful walk in the cool cloudy weather, I did not encounter much in this remote area except for a few stores selling delicious and cheap cookies.
                         </p>
                         <div class="description-image-container">
+                            <img src="images/3/d1.png" alt="Sleeping with a Stranger 2">
                             <img src="images/3/d2.png" alt="Sleeping with a Stranger 3">
                             <img src="images/3/d3.png" alt="Sleeping with a Stranger 4">
-                            <img src="images/3/d4.png" alt="Sleeping with a Stranger 5">
                         </div>
                         <p>
-                            On the subway ride back to go to the gaming convention center, I met a novice cosplayer wearing a very gruesome killer bunny outfit and I chatted with her about her craft, going over each skillful details from how she made her mask to the shavings on her axe and the stitches on her jeans.
+                            On the subway ride back to the gaming convention center, I met a novice cosplayer wearing a very gruesome homemade killer rabbit outfit and I chatted with her about her craft, animatedly going over each skillful details from how she made her mask to the rustic shavings on her axe and the stitches and drips of bloods on her gory jeans. Little did I know that in a little over 12 hours I would experience the most bloodcurdling moment of my 100 hour homelessness challenge.
                         </p>
                         <div class="description-image-container">
+                            <img src="images/3/d4.png" alt="Sleeping with a Stranger 5">
                             <img src="images/3/d5.png" alt="Sleeping with a Stranger 6">
-                            <img src="images/3/d6.png" alt="Sleeping with a Stranger 7">
                         </div>
+                        <p>
+                            I spent the rest of Saturday at the convention center attending event panels and playing board games until 9pm. The moment I stepped outside, the cool weather from morning was no more, replaced with a dark and windy rainstorm. The wind was so intense that when I tried to open my umbrella, the long rib immediately snapped back to the closed position, refusing to provide cover for me amidst the pouring rain. As I stood there in the storm trying to quickly shove the broken umbrella back into my bag to free my hand, the backpack zipper fell apart. Worst yet, it was 9pm on a Saturday. "What if I went back to MIT, the door is shut tight, and there is no students for me to tailgate into the building because it is Spring Break weekend and all the students went home?"
+                        </p>
+                        <img src="images/3/d6.png" alt="Sleeping with a Stranger 7">
+                        <p>
+                            The triple jeopardy of a heavy rainstorm, a broken umbrella, and fear that I would be stuck outside the walls of MIT in the rain overwhelmed my mind. And so with the mental state of a tenant evicted from his home without warming combined with the adrenaline fueled by fear of realized homelessness, I marched inside the convention center, eyes of a hawk looking for a hiding spot. I approached 3 different groups of employees and convention attendees who unanimously and without remorse rejected the desperate 20-year-old of a place to sleep.
+                        </p>
+                        <img src="images/3/d7.png" alt="Sleeping with a Stranger 8">
+                        <p>
+                            Left with no alternatives, I picked up my phone and dialed the chatty man I met last night in the Banana Lounge. He answered the phone and gave me his apartment address which was about 30 miles away. I took the subway half-way and a bus for the remaining duration. While on the bus, anticipation and terror fills my mind. I have only talked with him for 3 hours, "Am I about to trust this stranger with my wellbeing while I sleep?" I hastily went online to dig up as much information as I could find about the stranger. He did not have a major online presence and what little I did find could have easily been a fabricated story. What was even more chilling, his rare last name is the same as the Jigsaw Killer.
+                        </p>
+                        <p>
+                            "What if I went to his apartment, close my eye, and could never wake up?" I am in a state with no friends or family, and not a single person knew my whereabouts aside from the chatty stranger. I was so afraid that as I was sitting on the bus going to his address, I typed up a goodbye note to my family and hit sent to a distance friend. My rationale for sending the note to a distance friend is that he would not be able to stop me, and if I did not respond to him the next day, he would be able to the number I gave him so at least my family could contact the authorities to retrieve my body. He tried several times to stop me, but "courage is being afraid and doing it anyway". I wasn't sure at the time if it was courage or stupidity masked by adrenaline, but my gut feeling told me at the time to trust my research and my judgement of character. I stepped off the bus, walked down the dimly lit road, approached the apartment entrance, and gave the stranger a call.
+                        </p>
+                        <video controls loop playsinline src="images/3/video.mp4" alt="Sleeping with a Stranger Video" class="w-auto h-[300px] rounded-lg object-cover"></video>
+                        <p>
+                            It was a very large apartment that had about 50 rooms equipped with individual bathroom and kitchen but as the stranger guided me through the building to his room, I did not see or hear any other tenant (maybe because it was 11pm and everyone was deep asleep). He led me to his door with a sign that had characters I could not recognize as if he was part of some secretive cult. I stayed silent, on high alert throughout his apartment tour.
+                        </p>
                     </div>
                 </div>
 
-                <!-- New Adventure Card 4: Ocean Sailing -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
                     <img src="https://placehold.co/400x250/6EE7B7/ffffff?text=Ocean+Sail" alt="Ocean Sail Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I learned to sail across the ocean?</h3>
@@ -737,7 +253,6 @@
                         Embarking on a journey to master sailing and navigate the vast, unpredictable open ocean.
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
-                    <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
                         <div class="modal-image-gallery">
                             <img src="https://placehold.co/150x100/6EE7B7/ffffff?text=Ocean+View+1" alt="Ocean View 1">
@@ -749,7 +264,6 @@
                     </div>
                 </div>
 
-                <!-- New Adventure Card 5: Off-Grid Living -->
                 <div class="card flex-none w-[90%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1.333rem)] scroll-snap-align-start rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
                     <img src="https://placehold.co/400x250/FCD34D/ffffff?text=Off-Grid+Living" alt="Off-Grid Living Placeholder" class="rounded-lg mb-4 w-full h-auto object-cover aspect-square">
                     <h3 class="text-2xl font-semibold mb-3">What if I tried living entirely off-grid for a month?</h3>
@@ -757,7 +271,6 @@
                         A month-long experiment in complete self-sufficiency, disconnected from modern utilities.
                         <a href="#" class="read-more-link text-blue-400 hover:text-blue-200 block mt-2">Read more</a>
                     </p>
-                    <!-- Full detailed description hidden -->
                     <div class="full-description hidden">
                         <div class="modal-image-gallery">
                             <img src="https://placehold.co/150x100/FCD34D/ffffff?text=Off-Grid+View+1" alt="Off-Grid View 1">
@@ -771,7 +284,6 @@
             </div>
         </section>
 
-        <!-- Call to Action Section -->
         <section class="w-full bg-gradient-to-r from-blue-600 to-purple-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center rounded-xl shadow-xl mb-16 transform hover:scale-105 transition-transform duration-300 ease-in-out">
             <h2 class="text-4xl sm:text-5xl font-extrabold mb-6 cta-phrase">
                 What if <span class="emphasized-you">you</span> share your story with the world?
@@ -784,7 +296,6 @@
             </button>
         </section>
 
-        <!-- Contact Form Section -->
         <section id="contact-section" class="w-full container mx-auto px-4 rounded-xl shadow-lg p-8 sm:p-12 mb-12">
             <h2 class="text-4xl font-bold text-left mb-10 pb-2 border-b-4 border-purple-500 inline-block px-4">
                 Contact Me
@@ -792,7 +303,6 @@
             <p class="text-lg text-center mb-8">
                 Have your own "what if" story to share? Want to suggest a new adventure for me to tackle? Or perhaps you're ready to share your talent with the world and need a little encouragement. I'd love to hear from you!
             </p>
-            <!-- Form updated for EmailJS -->
             <form id="contact-form" class="space-y-6">
                 <div>
                     <label for="name" class="block text-sm font-medium mb-1">Name</label>
@@ -811,18 +321,15 @@
                         Send Message
                     </button>
                 </div>
-                <!-- Status message for form submission -->
                 <div id="status-message" class="text-center mt-4"></div>
             </form>
         </section>
 
-        <!-- Footer Section -->
         <footer class="w-full text-center py-8 text-sm">
             &copy; 2025 What If Network. All rights reserved.
         </footer>
     </div>
 
-    <!-- Modal Overlay and Content -->
     <div id="modal-overlay" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="modal-close" class="modal-close">&times;</button>
@@ -830,5 +337,9 @@
             <div id="modal-content" class="modal-body"></div>
         </div>
     </div>
+    <script src="js/main.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/scroll.js"></script>
+    <script src="js/contactForm.js"></script>
 </body>
 </html>
