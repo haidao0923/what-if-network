@@ -187,16 +187,16 @@ header p { /* Center the quote also */
 /* Styling for images within the modal */
 .modal-image-gallery {
     display: flex;
-    justify-content: center; /* Center images horizontally */
     gap: 0.5rem; /* Space between images */
-    flex-wrap: wrap; /* Allow images to wrap on smaller screens */
+    overflow-x: auto;
+    margin-bottom: 1rem;
 }
 .modal-image-gallery img, .description-image-container img {
     width: 30%; /* Approx 1/3 width for 3 images, allowing for gap */
-    height: auto;
+    height: fit;
     aspect-ratio: 1 / 1;
     border-radius: 0.5rem; /* rounded corners */
     object-fit: cover; /* Cover the area without distortion */
-    min-width: 80px; /* Minimum width for very small screens */
+    min-width: 300px; /* Minimum width for very small screens */
     max-width:300px;
 }

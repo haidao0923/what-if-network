@@ -20,7 +20,4 @@ window.onload = function() {
 
     // Initialize auto-scrolling adventure cards
     startAutoScroll();
-
-    // Initialize modal logic
-    initModal();
 };
